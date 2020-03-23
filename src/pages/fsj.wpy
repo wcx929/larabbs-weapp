@@ -1,0 +1,81 @@
+<style>
+	.weui-article__section{
+		margin-bottom: 1.5em;
+		left: 50%;
+		transform: translate(4%);
+		margin-top: 1rem;
+		width:90%;
+		border-radius: 4px;
+		background-color: #fff;
+		padding-left: 10px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+		font-size: 14px;
+		color: #818892;
+	}
+	image{
+		width: 50%;
+	}
+	.weui-article__p{
+		padding-top: 10px;
+	}
+</style>
+<template>
+	<view>
+		<view class="weui-article__section">
+                        <view class="weui-article__p">
+                            夏天的教室里闷热得很，唯一能让人愉悦的就是窗外的风和前桌的你。可窗户是关上的，你也不是我的。
+                        </view>
+                        <view class="weui-article__p">
+                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20191031/1572506490875157.jpg" mode="aspectFit" style="height: 180px" />
+                        </view>
+        </view>
+        <view class="weui-article__section">
+                        <view class="weui-article__p">
+                            早上醒来，出租屋里没有一丝光亮，安静极了，我拿起手机，却发现已经没电。孤独感像房间里的黑暗把我吞没，我裹紧了被子，希望这能给我一点安全感。
+                        </view>
+                        <view class="weui-article__p">
+                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20190719/1563498565320914.jpg" mode="aspectFit" style="height: 180px" />
+                        </view>
+        </view>
+        <view class="weui-article__section">
+                        <view class="weui-article__p">
+                            我做了个好梦 梦到星辰都颠倒 我胃里装满了恶臭的啤酒 凶猛的老虎扑过来撕咬我 你知道为什么是好梦吗 因为我望见 你在山上 看着我死。
+                        </view>
+                        <view class="weui-article__p">
+                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20190719/1563498729448646.jpg" mode="aspectFit" style="height: 180px" />
+                        </view>
+        </view>
+        <view class="weui-article__section">
+                        <view class="weui-article__p">
+                            你不知道今天的云有多美，我想到的第一件事情是拍照发给你。可是突然想起来，我们已经很久不联系了。我突然又觉得，其实云没那么好看了。
+                        </view>
+                        <view class="weui-article__p">
+                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20190719/1563497578826759.jpg" mode="aspectFit" style="height: 180px" />
+                        </view>
+        </view>
+	</view>
+</template>
+<script>
+  	import wepy from 'wepy'
+  	export default class Fsj extends wepy.page {
+		config = {
+			navigationBarTitleText: '浮生记'
+		}
+		onShareAppMessage (res) {
+	      return {
+	        // 标题是话题标题
+	        title: '浮生记',
+	        // 路径为话题详情路径
+	        path: '/pages/fsj',
+	        success: function(res) {
+	          // 转发成功
+	          console.log(res)
+	        },
+	        fail: function(res) {
+	          // 转发失败
+	          console.log(res)
+	        }
+	      }
+	    }
+	}
+</script>

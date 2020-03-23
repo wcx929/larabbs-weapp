@@ -1,0 +1,177 @@
+<style>
+.container1 {
+  display: flex;  /**指定flex 布局*/
+  flex-direction:row; /**布局内item 方向*/
+  flex-wrap:wrap; /**不够了就换行*/
+  justify-content:space-between; /**主轴两边对其*/
+  /* border:red 1pt solid; *显示边框 */
+  padding-left: 10px;
+	padding-right: 10px;
+	color: #696969;
+
+
+} 
+ 
+.container1 view{
+	display: flex; /**指定flex 布局*/
+	width:150rpx; /**宽度*/
+	height:80rpx; /**高度*/
+	justify-content:center; /**主轴居中*/
+	align-items:center; /**交叉轴居中*/
+	/* border: 1pt #aaa solid; *显示边框 */
+	background-color: #DCDCDC;
+	font-size: 14px;
+	margin-top: 10px;
+}
+.placeholder{
+    margin: 10px;
+    padding: 0 10px;
+    text-align: center;
+    background-color: #808080;
+    height: 1.6em;
+    line-height: 1.6em;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+.on{
+	background-color: #F4A460!important;
+	color: #FFFFFF;
+}
+.pic {
+  display: flex;  /**指定flex 布局*/
+  flex-direction:row; /**布局内item 方向*/
+  flex-wrap:wrap; /**不够了就换行*/
+  justify-content:space-between; /**主轴两边对其*/
+  /* border:red 1pt solid; *显示边框 */
+  padding-left: 10px;
+	padding-right: 10px;
+	color: #696969;
+}
+.pic view{
+	display: flex; /**指定flex 布局*/
+	width:230rpx; /**宽度*/
+	height:230rpx; /**高度*/
+	justify-content:center; /**主轴居中*/
+	align-items:center; /**交叉轴居中*/
+	/* border: 1pt #aaa solid; *显示边框 */
+	background-color: #FFF;
+	font-size: 14px;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+.pic image{
+	max-width: 230rpx;
+	max-height: 230rpx;
+} 
+
+</style>
+<template>
+    <view style="background-color:#fff">
+            <view class="container1">
+            <repeat for="{{ picTypeData }}" key="id" index="index" item="pictype">
+			  <view>{{ pictype.type_name }}</view>
+			</repeat>
+			</view>
+			<view class="weui-flex">
+                <view class="weui-flex__item"><view class="placeholder">点击查看图片，长按发送给好友</view></view>
+            </view>
+            <view class="pic">
+            	<repeat for="{{ picData }}" key="id" index="index" item="pic">
+					<view><image mode="widthFix" bindtap="previewImage" lazy-load='true' data-src="https://s.nmsl8.club{{pic.pic_url}}" src="https://s.nmsl8.club{{pic.thumb}}"></image></view>
+            	</repeat>
+			</view>
+    </view>
+</template>
+<script>
+  	import wepy from 'wepy'
+  	import api from '@/utils/api'
+  	export default class Pic extends wepy.page {
+		config = {
+			navigationBarTitleText: '表情包',
+			enablePullDownRefresh: true
+		}
+		data = {
+			picTypeData: [],
+			 picData: [],
+			 imglist:[
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6e863629b.jpg',
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6ed0346b1.jpg',
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6eff67131.gif',
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6f42b92bb.jpg',
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6f5eb0719.jpg',
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6f92868c6.png',
+			 'https://s.nmsl8.club/uploads/20190704/5d1d6fd08f01f.jpg'
+			 ]
+		}
+		// 获图片分类
+	    async getPictypes() {
+	      try {
+	        // 请求话题列表接口
+	        let pictypesResponse = await api.request({
+	          url: '/api/v1/pictype',
+	        })
+	        this.picTypeData = pictypesResponse.data.data
+	        this.$apply()
+	      } catch (err) {
+	        wepy.showModal({
+	          title: '提示',
+	          content: '服务器错误，请联系管理员'
+	        })
+	      }
+	    }
+	    // 获图片
+	    async getPicList(page = 1, reset = false) {
+	      try {
+	        // 请求话题列表接口
+	        let piclistResponse = await api.request({
+	          url: '/api/v1/piclist',
+	        })
+	        console.log(piclistResponse)
+	        this.picData = piclistResponse.data.data.info.data
+	        this.picData.forEach(function (this.picData) {
+	          this.imglist.push(this.picData.thumb)
+	        })
+	        console.log(this.imglist)
+	        this.$apply()
+	      } catch (err) {
+	        wepy.showModal({
+	          title: '提示',
+	          content: '服务器错误，请联系管理员'
+	        })
+	      }
+	    }
+	    async onLoad() {
+	      this.getPictypes()
+	      this.getPicList()
+	    }
+		methods = {
+	      async modalConfirm () {
+	        this.modalHidden = true
+	      },
+	      previewImage (e) {
+	      	var current = e.target.dataset.src;
+	        console.log(e)
+	        wx.previewImage({
+	          current: current,//需要预览的图片链接列表
+	          urls: this.imglist  //当前显示图片的链接
+	        })
+	      }
+	    }
+		onShareAppMessage (res) {
+	      return {
+	        // 标题是话题标题
+	        title: '浮生记',
+	        // 路径为话题详情路径
+	        path: '/pages/fsj',
+	        success: function(res) {
+	          // 转发成功
+	          console.log(res)
+	        },
+	        fail: function(res) {
+	          // 转发失败
+	          console.log(res)
+	        }
+	      }
+	    }
+	}
+</script>

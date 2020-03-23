@@ -1,0 +1,124 @@
+<style>
+	.con{
+		padding-left: 20px;
+		padding-right: 20px;
+		padding-top: 20px;
+	}
+	.first{
+		position: absolute;
+	    top: 0;
+	    left: 0;
+	    width: 100%;
+	    min-height: 100%;
+	    height: auto;
+	    background-color: #FFFFFF;
+	}
+	.weui-footer{
+		position:fixed;
+		bottom: 100px;
+		width:100%;
+	}
+	.by{
+		margin-top: 20px; 
+		font-size: 10px;
+		color: #A9A9A9;
+	}
+</style>
+<template>
+	<view class="first">
+	<view class="con">
+    <view class="weui-cell">
+        <view class="weui-cell__bd">
+            <textarea class="weui-textarea" value="{{sentence}}" placeholder="请输入要转换的语句" bindblur='formName' style="height: 3.3em" />
+        </view>
+    </view>
+    <button class="weui-btn" type="primary">生成抽象话</button>
+    <view class="weui-cell">
+        <view class="weui-cell__bd">
+            <textarea class="weui-textarea" value="{{cx_sentence}}" placeholder=""  style="height: 3.3em" />
+        </view>
+    </view>
+    <button class="weui-btn" data-text="{{ cx_sentence }}" type="primary" @tap="copyText">复制结果</button>
+    <text class="by"> 词库来自GitHub by 晨旭 （欢迎star）</text>
+    </view>
+
+    <view class="weui-footer">
+    <modal title="扫描二维码加入群聊" hidden="{{modalHidden}}" no-cancel=true bindconfirm="modalConfirm" bindcancel="modalCandel">
+        <view>
+          <image class="image" src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png" mode='aspectFill' data-src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png"  bindtap="previewImage"></image>
+        </view>
+    </modal>
+	<view class="weui-footer__links">
+	<navigator class="weui-footer__link" url="/pages/surport" role="navigation">字词我们</navigator>
+	<navigator class="weui-footer__link" role="navigation" @tap="qun">加入群聊</navigator>
+	</view>
+	<view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
+	</view>
+	</view>
+</template>
+<script>
+  	import wepy from 'wepy'
+  	import chouxiang from '@/utils/chouxiang'
+  	export default class Cxh extends wepy.page {
+		config = {
+			navigationBarTitleText: '抽象话生成器'
+		}
+		data = {
+			sentence:null,
+			cx_sentence:null,
+			modalHidden: true
+		}
+		async formName (s) {
+			let data = s.detail.value
+			let topicsResponse = await chouxiang.chouxiang(data)
+			this.cx_sentence = topicsResponse
+			this.$apply()
+		}
+		async copyText(e) {
+			console.log(e)
+		    wx.setClipboardData({
+		      data: e.currentTarget.dataset.text,
+		      success: function (res) {
+		        wx.getClipboardData({
+		          success: function (res) {
+		            wx.showToast({
+		              title: '复制成功'
+		            })
+		          }
+		        })
+		      }
+		    })
+		}
+		methods = {
+	      async modalConfirm () {
+	        this.modalHidden = true
+	      },
+	      qun () {
+	        this.modalHidden = false
+	      },
+	      previewImage () {
+	        console.log(1)
+	        wx.previewImage({
+	          current: 'http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png',//需要预览的图片链接列表
+	          urls: ['http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png']  //当前显示图片的链接
+	        })
+	      }
+	    }
+	    onShareAppMessage (res) {
+	      return {
+	        // 标题是话题标题
+	        title: '抽象话生成器',
+	        // 路径为话题详情路径
+	        path: '/pages/cxh',
+	        success: function(res) {
+	          // 转发成功
+	          console.log(res)
+	        },
+	        fail: function(res) {
+	          // 转发失败
+	          console.log(res)
+	        }
+	      }
+	    }
+	}
+</script>

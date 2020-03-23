@@ -1,0 +1,156 @@
+<style>
+	.surport{
+		text-align: center;
+		position: absolute;
+	    top: 0;
+	    left: 0;
+	    width: 100%;
+	    min-height: 100%;
+	    height: auto;
+	    background-color: #FFFFFF;
+	}
+	.surimg{
+		margin-top: 30px;
+		border: 1px solid #dee2e6 !important
+		margin: 0 auto;
+
+	}
+	.table {
+	 border: 0px solid darkgray;
+	 margin:0 auto;
+	 width:90%;
+	 font-size: 12px;
+	 padding-bottom: 20px; 
+	}
+	.tr {
+	 display: flex;
+	 width: 100%;
+	 justify-content: center;
+	 height: 100%;
+	 align-items: center;
+	}
+	.td {
+	 width:40%;
+	 justify-content: center;
+	 text-align: center;
+	}
+	.bg-w{
+	 background: snow;
+	}
+	.bg-g{
+	 background: #FFEBCD;
+	}
+	.th {
+	 width: 40%;
+	 justify-content: center;
+	 background:#CD853F;
+	 color: #fff;
+	 display: flex;
+	 height: 3rem;
+	 align-items: center;
+	}
+	.tip{
+		padding-top: 20px; 
+		padding-bottom: 20px; 
+		font-size: 12px;
+		color: #A9A9A9;
+		width: 90%;
+		margin:0 auto;
+	}
+</style>
+<template>
+<view class="surport">
+	<view class="surimg">
+	<image class="image" src="https://s.nmsl8.club/img/app/surport.jpg" mode='aspectFill' data-src="https://s.nmsl8.club/img/app/surport.jpg"  bindtap="previewImage"></image>
+	</view>
+	<view class="tip">
+	<text>您的帮助是对nmsl8.club最大的支持和动力！所有字词将会用于服务器的续期以及网站维护。</text>
+	</view>
+	<view class="table">
+	 <view class="tr bg-w">
+	 <view class="th">昵称</view>
+	 <view class="th">留言</view>
+	 <view class="th ">金额</view>
+	 </view>
+	 <block wx:for="{{listData}}" wx:key="{[code]}">
+	 <view class="tr bg-g" wx:if="{{index % 2 == 0}}">
+	  <view class="td">{{item.code}}</view>
+	  <view class="td">{{item.text}}</view>
+	  <view class="td">{{item.type}}</view>
+	 </view>
+	 <view class="tr" wx:else>
+	  <view class="td">{{item.code}}</view>
+	  <view class="td">{{item.text}}</view>
+	  <view class="td">{{item.type}}</view>
+	 </view>
+	 </block>
+	</view>
+	<view class="weui-footer">
+    <modal title="扫描二维码加入群聊" hidden="{{modalHidden}}" no-cancel=true bindconfirm="modalConfirm" bindcancel="modalCandel">
+        <view>
+          <image class="image" src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png" mode='aspectFill' data-src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png"  bindtap="previewImage"></image>
+        </view>
+    </modal>
+	<view class="weui-footer__links">
+	<navigator class="weui-footer__link" url="/pages/index" role="navigation">首页</navigator>
+	<navigator class="weui-footer__link" role="navigation" @tap="qun">加入群聊</navigator>
+	</view>
+	<view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
+	</view>
+</view>
+</template>
+<script>
+  	import wepy from 'wepy'
+  	export default class Surport extends wepy.page {
+		config = {
+			navigationBarTitleText: '字词我们'
+		}
+		data = {
+			listData: [
+			  {"code":"晚风","text":"没什么好说的，给大家拜个早年吧","type":"99"},
+			  {"code":"我方水晶","text":"祝各位兄弟","type":"100"},
+			  {"code":"臭农民工","text":"希望安部的软件早点散摊子","type":"33"},
+			  {"code":"fahaxiki","text":"2020成为桥本环奈的老公","type":"7"},
+			  {"code":"卿云烂兮","text":"新年快乐啊朋友们。","type":"12"},
+			  {"code":"卡莎","text":"2020年不再当舔狗","type":"10"},
+			  {"code":"我不会恰烟","text":"我想祝群里的兄弟们明年起码再活一年","type":"9.9"},
+			  {"code":"P*y","text":"就是想点这个二维码","type":"6.9"},
+			  {"code":"...","text":"...","type":"..."}
+			 ],
+			sentence:null,
+			cx_sentence:null,
+			modalHidden: true
+		}
+		methods = {
+	      async modalConfirm () {
+	        this.modalHidden = true
+	      },
+	      qun () {
+	        this.modalHidden = false
+	      },
+	      previewImage () {
+	        console.log(1)
+	        wx.previewImage({
+	          current: 'https://s.nmsl8.club/img/app/surport.jpg',//需要预览的图片链接列表
+	          urls: ['https://s.nmsl8.club/img/app/surport.jpg']  //当前显示图片的链接
+	        })
+	      }
+	    }
+	    onShareAppMessage (res) {
+	      return {
+	        // 标题是话题标题
+	        title: '支持我们',
+	        // 路径为话题详情路径
+	        path: '/pages/surport',
+	        success: function(res) {
+	          // 转发成功
+	          console.log(res)
+	        },
+	        fail: function(res) {
+	          // 转发失败
+	          console.log(res)
+	        }
+	      }
+	    }
+	}
+</script>

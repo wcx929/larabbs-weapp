@@ -1,12 +1,42 @@
+<style>
+  .weui-media-box{
+    padding: 6px;
+  }
+  .weui-media-box__title {
+    font-weight:600;
+    color:#D2B48C;
+  }
+  .weui-media-box__thumb {
+    width: 32px;
+    height: 32px;
+    vertical-align: top;
+  }
+  .weui-media-box {
+    margin: 10px;
+    }
+  .weui-media-box__hd_in-appmsg {
+    height:initial;
+    line-height: initial;
+  }
+  .weui-panel__bd{
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+  .image{
+    width:320px;
+    height: 320px;
+  }
+
+</style>
 <template>
-  <view class="page__bd">
-    <view class="weui-panel weui-panel_access">
-      <view class="weui-panel__hd">话题列表</view>
+  <view class="page__bd">    
+      <view class="weui-panel__hd">且随疾风前行，身后亦需留心</view>
       <view class="weui-panel__bd">
         <repeat for="{{ topics }}" key="id" index="index" item="topic">
-          <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+          <navigator url="{{ topic.url }}" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
             <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-              <image class="weui-media-box__thumb" src="https://cdn.learnku.com/uploads/avatars/3995_1516760409.jpg?imageView2/1/w/200/h/200" />
+              <image class="weui-media-box__thumb" src="{{ topic.img }}" />
             </view>
             <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
               <view class="weui-media-box__title">{{ topic.title }}</view>
@@ -15,9 +45,21 @@
           </navigator>
         </repeat>
       </view>
-    </view>
+      <modal title="扫描二维码加入群聊" hidden="{{modalHidden}}" no-cancel=true bindconfirm="modalConfirm" bindcancel="modalCandel">
+        <view>
+          <image class="image" src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png" mode='aspectFill' data-src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png"  bindtap="previewImage"></image>
+        </view>
+      </modal>
+  </view>
+  <view class="weui-footer">
+  <view class="weui-footer__links">
+  <navigator class="weui-footer__link" url="/pages/surport" role="navigation">字词我们</navigator>
+  <navigator class="weui-footer__link" role="navigation" @tap="qun">加入群聊</navigator>
+  </view>
+  <view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
   </view>
 </template>
+
 
 <script>
   import wepy from 'wepy'
@@ -27,21 +69,80 @@
     data = {
       topics: [{
         id: 1,
-        title: '测试1',
-        body: 'larabbs 测试内容1'
+        img: 'https://s.nmsl8.club/img/app/bqb.png',
+        title: '抽象表情包',
+        body: '🏄‍人用的表情包 ps:维护中，暂时无法查看，可从浏览器访问',
+        url:"/pages/pic"
       }, {
         id: 2,
-        title: '测试2',
-        body: 'larabbs 测试内容2'
+        img: 'https://s.nmsl8.club/img/app/zc.png',
+        title: '嘴臭生成器',
+        body: '最简单的嘴臭，最极致的享受',
+        url:"/pages/sentence?type=2"
       }, {
         id: 3,
-        title: '测试3',
-        body: 'larabbs 测试内容3'
+        img: 'https://s.nmsl8.club/img/app/zt.png',
+        title: '嘴甜生成器',
+        body: '谁不想要甜甜的恋爱💑',
+        url:"/pages/sentence?type=1"
       }, {
         id: 4,
-        title: '测试4',
-        body: 'larabbs 测试内容4'
-      }]
+        img: 'https://s.nmsl8.club/img/app/pyq.png',
+        title: '朋友圈文案生成器',
+        body: '不知道发什么？来选一条吧',
+        url:"/pages/sentence?type=3"
+      }, {
+        id: 5,
+        img: 'https://s.nmsl8.club/img/app/djt.png',
+        title: '毒鸡汤生成器',
+        body: '有时候你不逼自己一把，你都不知道什么叫绝望',
+        url:"/pages/sentence?type=4"
+      }, {
+        id: 6,
+        img: 'https://s.nmsl8.club/img/app/cxh.png',
+        title: '抽象话生成器',
+        body: '🌶是💉🉐🐂🍺',
+        url:"/pages/cxh"
+      }, {
+        id: 7,
+        img: 'https://s.nmsl8.club/img/app/fsj.png',
+        title: '浮生记',
+        body: '你在山上，看着我死',
+        url:"/pages/fsj"
+      }],
+      modalHidden: true,
+      nocancel: true
+    }
+    methods = {
+      async modalConfirm () {
+        this.modalHidden = true
+      },
+      qun () {
+        this.modalHidden = false
+      },
+      previewImage () {
+        console.log(1)
+        wx.previewImage({
+          current: 'http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png',//需要预览的图片链接列表
+          urls: ['http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png']  //当前显示图片的链接
+        })
+      }
+    }
+    onShareAppMessage (res) {
+      return {
+        // 标题是话题标题
+        title: '抽象APP',
+        // 路径为话题详情路径
+        path: '/pages/index',
+        success: function(res) {
+          // 转发成功
+          console.log(res)
+        },
+        fail: function(res) {
+          // 转发失败
+          console.log(res)
+        }
+      }
     }
   }
 </script>

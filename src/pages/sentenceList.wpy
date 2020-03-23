@@ -1,0 +1,150 @@
+<style>
+	.weui-article__section{
+		margin-bottom: 1.5em;
+		left: 50%;
+		transform: translate(4%);
+		margin-top: 1rem;
+		width:90%;
+		border-radius: 4px;
+		background-color: #fff;
+		padding-left: 10px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+		font-size: 14px;
+		color: #818892;
+	}
+	.weui-article__p{
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+	.xh{
+		width: 16px;
+		height: 16px;
+	}
+	.xh2{
+		float: right;
+		margin-right: 10px;
+	}
+</style>
+<template>
+	<view>
+		<repeat for="{{ topics }}" key="id" index="index" item="topic">
+			<view class="weui-article__section">
+	                        <view class="weui-article__p">
+	                            {{ topic.content }}
+	                        </view>
+	                        <view style="font-size:12px;">
+	                        	<image class="xh" src="https://s.nmsl8.club/img/app/xh0.png" mode='aspectFill'></image> 999
+	                        	<image class="xh xh2" src="https://s.nmsl8.club/img/app/copy.png" data-text="{{ topic.content }}" @tap="copyText" mode='aspectFill'></image>
+	                        </view>
+	        </view>
+        </repeat>
+        <view class="weui-loadmore weui-loadmore_line" wx:if="{{ noMoreData }}">
+          <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
+        </view>
+	</view>
+</template>
+<script>
+  	import wepy from 'wepy'
+  	import api from '@/utils/api'
+  	export default class Sentencelist extends wepy.page {
+		config = {
+			navigationBarTitleText: '句子列表',
+			enablePullDownRefresh: true
+		}
+		data = {
+			// 数据
+      		topics: [],
+			type:null,
+			page: 1,
+      		noMoreData: false,
+			title:'句子列表',
+			modalHidden: true
+		}
+		async getSentence(page = 1,type,reset = false) {
+			type = this.type
+			try {
+				// 请求话题列表接口
+				let topicsResponse = await api.request({
+					url: 'getlist',
+					data: {
+						page: page,
+						type: type,
+					}
+				})
+				let topics = topicsResponse.data.data
+				this.topics = reset ? topics : this.topics.concat(topics)
+				if (topicsResponse.data.current_page === topicsResponse.data.last_page) {
+		          this.noMoreData = true
+		        }
+				this.$apply()
+			} catch (err) {
+				wepy.showModal({
+					title: '提示',
+					content: '服务器错误，请联系管理员'
+					})
+			}
+		}
+		async onLoad(options) {
+			this.type = options.type
+			let title = null;
+			if(options.type=='1'){
+				title = '嘴甜生成器'
+			}else if(options.type=='2'){
+				title = '嘴臭生成器'
+			}else if(options.type=='3'){
+				title = '朋友圈文案生成器'
+			}else if(options.type=='4'){
+				title = '毒鸡汤生成器'
+			}
+			wx.setNavigationBarTitle({
+			   title: title
+			})
+			this.getSentence()
+		}
+		async onReachBottom () {
+	      // 如果没有更多内容，直接返回
+	      if (this.noMoreData) {
+	        return
+	      }
+	      this.page = this.page + 1
+	      await this.getSentence(this.page)
+	      this.$apply()
+	    }
+	    async onPullDownRefresh() {
+	      this.page = 1
+	      await this.getSentence(1,this.type,true)
+	      wepy.stopPullDownRefresh()
+	    }
+	    async copyText(e) {
+			console.log(e)
+		    wx.setClipboardData({
+		      data: e.currentTarget.dataset.text,
+		      success: function (res) {
+		        wx.getClipboardData({
+		          success: function (res) {
+		            wx.showToast({
+		              title: '复制成功'
+		            })
+		          }
+		        })
+		      }
+		    })
+		}
+		onShareAppMessage (res) {
+	      return {
+	        // 标题是话题标题
+	        title: '浮生记',
+	        // 路径为话题详情路径
+	        path: '/pages/fsj',
+	        success: function(res) {
+	          // 转发成功
+	          console.log(res)
+	        },
+	        fail: function(res) {
+	          // 转发失败
+	          console.log(res)
+	        }
+	      }
+	    }
+	}
+</script>

@@ -1,0 +1,163 @@
+<style>
+	.sdiv{
+		margin-top: 100px;
+		font-size: 18px;
+		height: 200px;
+		font-size: 16px;
+		color: #818892;
+	}
+	.ssdiv{
+		width: 90%;
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-bottom:20px;
+		border-bottom:1px solid #dee2e6 !important;
+		margin:10px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+		padding-top: 20px;
+	}
+	.button{
+		text-align: center !important;
+	}
+	.weui-btn{
+		margin-right: 20px;
+	}
+	.sentence{
+		
+		padding-bottom:3rem !important;
+	}
+	.weui-footer{
+		position:fixed;
+		bottom: 100px;
+		width:100%;
+	}
+</style>
+
+<template>
+ 	<view class="sdiv">
+		<view class="ssdiv">
+			<text class="sentence">{{ topics }}</text>
+		</view>
+	</view>		
+	<view class="button">  
+	<button class="weui-btn mini-btn list" bindtap="goToList" size="mini" type="default" role="button" aria-disabled="false">列表查看</button>
+	<button class="weui-btn mini-btn " size="mini" type="primary" role="button" aria-disabled="false" @tap="getTopics">再来一条</button>
+	<button class="weui-btn mini-btn copy" size="mini" type="default" role="button" aria-disabled="false" data-text="{{ topics }}" @tap="copyText">复制</button>
+	</view>
+	<view class="weui-footer">
+    <modal title="扫描二维码加入群聊" hidden="{{modalHidden}}" no-cancel=true bindconfirm="modalConfirm" bindcancel="modalCandel">
+        <view>
+          <image class="image" src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png" mode='aspectFill' data-src="http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png"  bindtap="previewImage"></image>
+        </view>
+    </modal>
+	<view class="weui-footer__links">
+	<navigator class="weui-footer__link" url="/pages/index" role="navigation">首页</navigator>
+	<navigator class="weui-footer__link" role="navigation" @tap="qun">加入群聊</navigator>
+	</view>
+	<view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
+	</view>
+</template>
+<script>
+  	import wepy from 'wepy'
+  	import api from '@/utils/api'
+  	export default class Sentence extends wepy.page {
+		config = {
+			navigationBarTitleText: ''
+		}
+		data = {
+			topics:'且随疾风前行',
+			type:null,
+			title:null,
+			modalHidden: true
+		}
+		async getTopics(type) {
+			type = this.type
+			try {
+				// 请求话题列表接口
+				let topicsResponse = await api.request({
+					url: 'getloveword',
+					data: {
+						type: type,
+					}
+				})
+				let topics = topicsResponse.data.content
+				this.topics = topics
+				console.log(topics)
+				this.$apply()
+			} catch (err) {
+				wepy.showModal({
+					title: '提示',
+					content: '服务器错误，请联系管理员'
+					})
+			}
+		}
+		async onLoad(options) {
+			this.type = options.type
+			let title = null;
+			if(options.type=='1'){
+				title = '嘴甜生成器'
+			}else if(options.type=='2'){
+				title = '嘴臭生成器'
+			}else if(options.type=='3'){
+				title = '朋友圈生成器'
+			}else if(options.type=='4'){
+				title = '毒鸡汤生成器'
+			}
+			wx.setNavigationBarTitle({
+			   title: title
+			})
+			this.getTopics()
+		}
+		async copyText(e) {
+			console.log(e)
+		    wx.setClipboardData({
+		      data: e.currentTarget.dataset.text,
+		      success: function (res) {
+		        wx.getClipboardData({
+		          success: function (res) {
+		            wx.showToast({
+		              title: '复制成功'
+		            })
+		          }
+		        })
+		      }
+		    })
+		}
+		methods = {
+	      async modalConfirm () {
+	        this.modalHidden = true
+	      },
+	      qun () {
+	        this.modalHidden = false
+	      },
+	      previewImage () {
+	        console.log(1)
+	        wx.previewImage({
+	          current: 'https://s.nmsl8.club/img/app/surport.jpg',//需要预览的图片链接列表
+	          urls: ['https://s.nmsl8.club/img/app/surport.jpg']  //当前显示图片的链接
+	        })
+	      },
+	      goToList () {
+	      	wx.navigateTo({
+				url: '/pages/sentenceList?type=' + this.type,
+			})
+	      }
+	    }
+		onShareAppMessage (res) {
+	      return {
+	        // 标题是话题标题
+	        title: this.title,
+	        // 路径为话题详情路径
+	        path: '/pages/sentence',
+	        success: function(res) {
+	          // 转发成功
+	          console.log(res)
+	        },
+	        fail: function(res) {
+	          // 转发失败
+	          console.log(res)
+	        }
+	      }
+	    }
+	}
+</script>

@@ -39,16 +39,26 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
+      'pages/cxh',
+      'pages/fsj',
+      'pages/pic',
+      'pages/sentenceList',
+      'pages/surport',
+      'pages/sentence',
+      'pages/topics/index',
+      'pages/topics/show',
+      
       'pages/user',
-      'pages/auth/login'
+      'pages/auth/login',
+      'pages/auth/register'
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'LaraBBS',
-      navigationBarTextStyle: 'black'
+      navigationBarBackgroundColor: '#343a40',
+      navigationBarTitleText: '抽象APP',
+      navigationBarTextStyle: 'white'
     },
-    tabBar: {
+    /*tabBar: {
       list: [{
         pagePath: 'pages/index',
         text: '首页',
@@ -62,7 +72,7 @@ export default class extends wepy.app {
       }],
       color: '#707070',
       selectedColor: '#00b5ad'
-    }
+    }*/
   }
 
   constructor () {

@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/bin/yarn add wepy-async-function
+  /usr/local/bin/node /usr/bin/yarn add moment –-no-bin-links
 
 PATH: 
   /home/vagrant/.composer/vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
@@ -14,7 +14,14 @@ Platform:
   linux x64
 
 Trace: 
-  Error: EPROTO: protocol error, symlink '../acorn/bin/acorn' -> '/home/vagrant/Code/larabbs-weapp/node_modules/acorn-jsx/node_modules/.bin/acorn'
+  TypeError [ERR_UNESCAPED_CHARACTERS]: Request path contains unescaped characters
+      at new ClientRequest (_http_client.js:148:13)
+      at Object.request (https.js:314:10)
+      at Request.module.exports.Request.start (/usr/lib/node_modules/yarn/lib/cli.js:141101:32)
+      at Request.module.exports.Request.end (/usr/lib/node_modules/yarn/lib/cli.js:141860:10)
+      at end (/usr/lib/node_modules/yarn/lib/cli.js:140914:14)
+      at Immediate._onImmediate (/usr/lib/node_modules/yarn/lib/cli.js:140928:7)
+      at processImmediate (internal/timers.js:456:21)
 
 npm manifest: 
   {
@@ -41,7 +48,7 @@ npm manifest:
       "redux-actions": "^2.2.1",
       "redux-promise": "^0.5.3",
       "wepy": "^1.6.0",
-      "wepy-async-function": "^1.4.4",
+      "wepy-async-function": "^1.4.7",
       "wepy-com-toast": "^1.0.2",
       "wepy-redux": "^1.5.3"
     },
@@ -2362,7 +2369,7 @@ Lockfile:
       core-util-is "1.0.2"
       extsprintf "^1.2.0"
   
-  wepy-async-function@^1.4.4:
+  wepy-async-function@^1.4.7:
     version "1.4.7"
     resolved "https://registry.npm.taobao.org/wepy-async-function/download/wepy-async-function-1.4.7.tgz#f783164306e175d9a7c2656a33532e619c8eae16"
     integrity sha1-94MWQwbhddmnwmVqM1MuYZyOrhY=
