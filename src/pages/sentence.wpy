@@ -2,7 +2,7 @@
 	.sdiv{
 		margin-top: 100px;
 		font-size: 18px;
-		height: 200px;
+		height: 300px;
 		font-size: 16px;
 		color: #818892;
 	}
@@ -17,6 +17,7 @@
 		padding-top: 20px;
 	}
 	.button{
+		font-weight: 600;
 		text-align: center !important;
 	}
 	.weui-btn{
@@ -40,7 +41,10 @@
 		</view>
 	</view>		
 	<view class="button">  
-	<button class="weui-btn mini-btn list" bindtap="goToList" size="mini" type="default" role="button" aria-disabled="false">列表查看</button>
+	<!-- <button class="weui-btn mini-btn list" bindtap="goToList" size="mini" type="default" role="button" aria-disabled="false">列表查看</button> -->
+	<view wx:if="{{ nmsl }}">
+    <switch bindchange="switch1Change"></switch>火力全开
+    </view>
 	<button class="weui-btn mini-btn " size="mini" type="primary" role="button" aria-disabled="false" @tap="getTopics">再来一条</button>
 	<button class="weui-btn mini-btn copy" size="mini" type="default" role="button" aria-disabled="false" data-text="{{ topics }}" @tap="copyText">复制</button>
 	</view>
@@ -52,6 +56,7 @@
     </modal>
 	<view class="weui-footer__links">
 	<navigator class="weui-footer__link" url="/pages/index" role="navigation">首页</navigator>
+	<navigator class="weui-footer__link" url="/pages/surport" role="navigation">字词我们</navigator>
 	<navigator class="weui-footer__link" role="navigation" @tap="qun">加入群聊</navigator>
 	</view>
 	<view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
@@ -68,7 +73,8 @@
 			topics:'且随疾风前行',
 			type:null,
 			title:null,
-			modalHidden: true
+			modalHidden: true,
+			nmsl:false
 		}
 		async getTopics(type) {
 			type = this.type
@@ -91,12 +97,20 @@
 					})
 			}
 		}
+		async switch1Change(e){
+			if(e.detail.value == true){
+				this.type = 2
+			}else{
+				this.type = 6
+			}
+		}
 		async onLoad(options) {
 			this.type = options.type
 			let title = null;
 			if(options.type=='1'){
 				title = '嘴甜生成器'
-			}else if(options.type=='2'){
+			}else if(options.type=='2' || options.type=='6'){
+				this.nmsl = true
 				title = '嘴臭生成器'
 			}else if(options.type=='3'){
 				title = '朋友圈生成器'
@@ -133,8 +147,8 @@
 	      previewImage () {
 	        console.log(1)
 	        wx.previewImage({
-	          current: 'https://s.nmsl8.club/img/app/surport.jpg',//需要预览的图片链接列表
-	          urls: ['https://s.nmsl8.club/img/app/surport.jpg']  //当前显示图片的链接
+	          current: 'http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png',//需要预览的图片链接列表
+	          urls: ['http://k.nmsl8.club/wp-content/uploads/2019/11/wx.png']  //当前显示图片的链接
 	        })
 	      },
 	      goToList () {

@@ -63,13 +63,36 @@
 	max-width: 230rpx;
 	max-height: 230rpx;
 } 
-
+.deg button{
+	position: unset!important;
+	display: unset!important;
+	margin-left: unset!important;
+	margin-right: unset!important;
+	padding-left: unset!important;
+	padding-right: unset!important;
+	box-sizing: unset!important;
+	font-size: unset!important;
+	text-align: unset!important;
+	text-decoration: unset!important;
+	line-height: unset!important;
+	border-radius: unset!important;
+	-webkit-tap-highlight-color: unset!important;
+	overflow: unset!important;
+	color: unset!important;
+	background-color: unset!important;
+  }
+.deg button:after{border:none;}
+input{
+outline:none;
+border:none;
+list-style: none;
+}
 </style>
 <template>
     <view style="background-color:#fff">
             <view class="container1">
             <repeat for="{{ picTypeData }}" key="id" index="index" item="pictype">
-			  <view>{{ pictype.type_name }}</view>
+			  <view class="{{pictype.id==idx?'on':''}}" @tap="toggle" data-index="{{pictype.id}}" >{{ pictype.type_name }}</view>
 			</repeat>
 			</view>
 			<view class="weui-flex">
@@ -80,6 +103,16 @@
 					<view><image mode="widthFix" bindtap="previewImage" lazy-load='true' data-src="https://s.nmsl8.club{{pic.pic_url}}" src="https://s.nmsl8.club{{pic.thumb}}"></image></view>
             	</repeat>
 			</view>
+			<view class="weui-loadmore weui-loadmore_line" wx:if="{{ noMoreData }}">
+	          <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
+	        </view>
+	        <view class="weui-footer">
+			  <view class="weui-footer__links">
+			  <navigator class="weui-footer__link" url="/pages/surport" role="navigation">字词我们</navigator>
+			  <navigator class="weui-footer__link deg" role="navigation" ><button open-type="contact">客服</button></navigator>
+			  </view>
+			  <view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
+			  </view>
     </view>
 </template>
 <script>
@@ -92,16 +125,13 @@
 		}
 		data = {
 			picTypeData: [],
-			 picData: [],
-			 imglist:[
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6e863629b.jpg',
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6ed0346b1.jpg',
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6eff67131.gif',
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6f42b92bb.jpg',
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6f5eb0719.jpg',
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6f92868c6.png',
-			 'https://s.nmsl8.club/uploads/20190704/5d1d6fd08f01f.jpg'
-			 ]
+			picData: [],
+			imglist:[],
+			idx:-1,
+			type:null,
+			noMoreData: false,
+			// 当前分页
+      		page: 1,
 		}
 		// 获图片分类
 	    async getPictypes() {
@@ -119,19 +149,28 @@
 	        })
 	      }
 	    }
-	    // 获图片
+	    // 获取图片
 	    async getPicList(page = 1, reset = false) {
 	      try {
-	        // 请求话题列表接口
+	        // 请求图片列表接口
 	        let piclistResponse = await api.request({
 	          url: '/api/v1/piclist',
+	          data: {
+	            page: page,
+	            // 选中的分类id
+	            type: this.type,
+	          }
 	        })
-	        console.log(piclistResponse)
-	        this.picData = piclistResponse.data.data.info.data
-	        this.picData.forEach(function (this.picData) {
-	          this.imglist.push(this.picData.thumb)
+	        let imglist = []
+	        let picData = piclistResponse.data.data.info.data
+	        this.picData = reset ? picData : this.picData.concat(picData)
+	        picData.forEach(function (picData) {
+	          imglist.push("https://s.nmsl8.club"+picData.pic_url)
 	        })
-	        console.log(this.imglist)
+	        this.imglist = imglist
+	        if (piclistResponse.data.data.info.current_page === piclistResponse.data.data.info.last_page) {
+		          this.noMoreData = true
+		        }
 	        this.$apply()
 	      } catch (err) {
 	        wepy.showModal({
@@ -140,13 +179,41 @@
 	        })
 	      }
 	    }
+	    //选择图片分类
+	    async toggle(e){
+	    	let index = e.currentTarget.dataset.index 
+	    	// 点击当前已选类型直接返回
+	        if (Number(index) === this.type) {
+	          return
+	        }
+	    	this.idx=index
+	    	this.type=index
+	    	this.getPicList(1, true)
+	    }
 	    async onLoad() {
+	      console.log(123)
 	      this.getPictypes()
 	      this.getPicList()
 	    }
+	    //上滑加载
+	    async onPullDownRefresh() {
+	      this.noMoreData = false
+	      this.page = 1
+	      await this.getPicList(1, true)
+	      wepy.stopPullDownRefresh()
+	    }
+	    async onReachBottom () {
+	      // 如果没有更多内容，直接返回
+	      if (this.noMoreData) {
+	        return
+	      }
+	      this.page = this.page + 1
+	      await this.getPicList(this.page)
+	      this.$apply()
+	    }
 		methods = {
 	      async modalConfirm () {
-	        this.modalHidden = true
+        	this.modalHidden = true
 	      },
 	      previewImage (e) {
 	      	var current = e.target.dataset.src;
@@ -160,9 +227,9 @@
 		onShareAppMessage (res) {
 	      return {
 	        // 标题是话题标题
-	        title: '浮生记',
+	        title: '抽象表情包',
 	        // 路径为话题详情路径
-	        path: '/pages/fsj',
+	        path: '/pages/pic',
 	        success: function(res) {
 	          // 转发成功
 	          console.log(res)

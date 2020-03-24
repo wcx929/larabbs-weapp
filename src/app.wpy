@@ -56,7 +56,8 @@ export default class extends wepy.app {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#343a40',
       navigationBarTitleText: '抽象APP',
-      navigationBarTextStyle: 'white'
+      navigationBarTextStyle: 'white',
+      backgroundColor:'#343a40',
     },
     /*tabBar: {
       list: [{

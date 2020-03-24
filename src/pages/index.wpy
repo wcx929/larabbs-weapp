@@ -27,7 +27,25 @@
     width:320px;
     height: 320px;
   }
-
+  .deg button{
+  position: unset!important;
+  display: unset!important;
+  margin-left: unset!important;
+  margin-right: unset!important;
+  padding-left: unset!important;
+  padding-right: unset!important;
+  box-sizing: unset!important;
+  font-size: unset!important;
+  text-align: unset!important;
+  text-decoration: unset!important;
+  line-height: unset!important;
+  border-radius: unset!important;
+  -webkit-tap-highlight-color: unset!important;
+  overflow: unset!important;
+  color: unset!important;
+  background-color: unset!important;
+  }
+.deg button:after{border:none;}
 </style>
 <template>
   <view class="page__bd">    
@@ -54,6 +72,7 @@
   <view class="weui-footer">
   <view class="weui-footer__links">
   <navigator class="weui-footer__link" url="/pages/surport" role="navigation">字词我们</navigator>
+  <navigator class="weui-footer__link deg" role="navigation" ><button open-type="contact">客服</button></navigator>
   <navigator class="weui-footer__link" role="navigation" @tap="qun">加入群聊</navigator>
   </view>
   <view class="weui-footer__text">© 2017-2020 nmsl8.club</view>
@@ -71,14 +90,14 @@
         id: 1,
         img: 'https://s.nmsl8.club/img/app/bqb.png',
         title: '抽象表情包',
-        body: '🏄‍人用的表情包 ps:维护中，暂时无法查看，可从浏览器访问',
+        body: '🏄‍人用的表情包',
         url:"/pages/pic"
       }, {
         id: 2,
         img: 'https://s.nmsl8.club/img/app/zc.png',
         title: '嘴臭生成器',
         body: '最简单的嘴臭，最极致的享受',
-        url:"/pages/sentence?type=2"
+        url:"/pages/sentence?type=6"
       }, {
         id: 3,
         img: 'https://s.nmsl8.club/img/app/zt.png',
@@ -107,7 +126,7 @@
         id: 7,
         img: 'https://s.nmsl8.club/img/app/fsj.png',
         title: '浮生记',
-        body: '你在山上，看着我死',
+        body: '你在山上，看着我死 [待更新]',
         url:"/pages/fsj"
       }],
       modalHidden: true,
