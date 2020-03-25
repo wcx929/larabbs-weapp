@@ -1,65 +1,130 @@
 <style>
 	.weui-article__section{
-		margin-bottom: 1.5em;
-		left: 50%;
-		transform: translate(4%);
+		margin: 1em auto;
 		margin-top: 1rem;
 		width:90%;
 		border-radius: 4px;
 		background-color: #fff;
-		padding-left: 10px;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
 		font-size: 14px;
-		color: #818892;
+		color: #696969;
 	}
 	image{
 		width: 50%;
 	}
-	.weui-article__p{
-		padding-top: 10px;
+	.fsj{
+		width: 94%;
+		margin: 0 auto;
+		padding-top: 6px;
+		padding-bottom: 6px;
+	}
+	.xh{
+		width: 16px;
+		height: 16px;
+	}
+	.xh2{
+		float: right;
+		margin-right: 10px;
+	}
+	.title{
+	text-align: center;
+	margin-top: 10px;
 	}
 </style>
 <template>
 	<view>
-		<view class="weui-article__section">
-                        <view class="weui-article__p">
-                            夏天的教室里闷热得很，唯一能让人愉悦的就是窗外的风和前桌的你。可窗户是关上的，你也不是我的。
-                        </view>
-                        <view class="weui-article__p">
-                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20191031/1572506490875157.jpg" mode="aspectFit" style="height: 180px" />
-                        </view>
-        </view>
-        <view class="weui-article__section">
-                        <view class="weui-article__p">
-                            早上醒来，出租屋里没有一丝光亮，安静极了，我拿起手机，却发现已经没电。孤独感像房间里的黑暗把我吞没，我裹紧了被子，希望这能给我一点安全感。
-                        </view>
-                        <view class="weui-article__p">
-                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20190719/1563498565320914.jpg" mode="aspectFit" style="height: 180px" />
-                        </view>
-        </view>
-        <view class="weui-article__section">
-                        <view class="weui-article__p">
-                            我做了个好梦 梦到星辰都颠倒 我胃里装满了恶臭的啤酒 凶猛的老虎扑过来撕咬我 你知道为什么是好梦吗 因为我望见 你在山上 看着我死。
-                        </view>
-                        <view class="weui-article__p">
-                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20190719/1563498729448646.jpg" mode="aspectFit" style="height: 180px" />
-                        </view>
-        </view>
-        <view class="weui-article__section">
-                        <view class="weui-article__p">
-                            你不知道今天的云有多美，我想到的第一件事情是拍照发给你。可是突然想起来，我们已经很久不联系了。我突然又觉得，其实云没那么好看了。
-                        </view>
-                        <view class="weui-article__p">
-                            <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20190719/1563497578826759.jpg" mode="aspectFit" style="height: 180px" />
-                        </view>
-        </view>
+		<view class="title">
+				持续更新...
+		</view>
+		<repeat for="{{ fsjs }}" key="id" index="index" item="fsj">
+			<view class="weui-article__section">
+	            <view class="fsj">
+	                {{ fsj.content }}
+	                <view style="font-size:12px;color:#808080;margin-top:6px;">
+	                <image class="xh" src="https://s.nmsl8.club/img/app/date.png" mode='aspectFill'></image> {{ fsj.created_at }}
+	                <image class="xh xh2" src="https://s.nmsl8.club/img/app/copy.png" data-text="{{ fsj.content }}" @tap="copyText" mode='aspectFill'></image>
+	            	</view>
+	            </view>
+	            
+	            <!-- <view class="weui-article__p">
+	                <image class="weui-article__img" src="http://www.nmsl8.club/public/static/ueditor/uploads/20191031/1572506490875157.jpg" mode="aspectFit" style="height: 180px" />
+	            </view> -->
+	        </view>
+	    </repeat>
+	    <view class="weui-loadmore weui-loadmore_line" wx:if="{{ noMoreData }}">
+	        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
+	    </view>
 	</view>
 </template>
 <script>
   	import wepy from 'wepy'
+  	import api from '@/utils/api'
   	export default class Fsj extends wepy.page {
 		config = {
-			navigationBarTitleText: '浮生记'
+			navigationBarTitleText: '浮生记',
+			enablePullDownRefresh: true
+		}
+		data = {
+			// 数据
+      		fsjs: [],
+			page: 1,
+      		noMoreData: false,
+			modalHidden: true
+		}
+		async getFsj(page = 1,reset = false) {
+			try {
+				// 请求话题列表接口
+				let fsjsResponse = await api.request({
+					url: 'api/v1/fsjlist',
+					data: {
+						page: page,
+					}
+				})
+				let fsjs = fsjsResponse.data.data.data
+				this.fsjs = reset ? fsjs : this.fsjs.concat(fsjs)
+				if (fsjsResponse.data.data.current_page === fsjsResponse.data.data.last_page) {
+		          this.noMoreData = true
+		        }
+				this.$apply()
+			} catch (err) {
+				wepy.showModal({
+					title: '提示',
+					content: '服务器错误，请联系管理员'
+					})
+			}
+		}
+		async onReachBottom () {
+	      // 如果没有更多内容，直接返回
+	      if (this.noMoreData) {
+	        return
+	      }
+	      this.page = this.page + 1
+	      await this.getFsj(this.page)
+	      this.$apply()
+	    }
+		async onPullDownRefresh() {
+			this.noMoreData = false
+	      	this.page = 1
+	      	await this.getFsj(1,true)
+	      	wepy.stopPullDownRefresh()
+	    }
+		async onLoad(options) {
+			this.getFsj()
+		}
+		async copyText(e) {
+			console.log(e)
+		    wx.setClipboardData({
+		      data: e.currentTarget.dataset.text,
+		      success: function (res) {
+		        wx.getClipboardData({
+		          success: function (res) {
+		            wx.showToast({
+		              title: '复制成功'
+		            })
+		          }
+		        })
+		      }
+		    })
 		}
 		onShareAppMessage (res) {
 	      return {

@@ -83,10 +83,13 @@
   }
 .deg button:after{border:none;}
 input{
-outline:none;
-border:none;
-list-style: none;
+	outline:none;
+	border:none;
+	list-style: none;
 }
+.weui-footer{
+		margin-bottom: 20px;
+	}
 </style>
 <template>
     <view style="background-color:#fff">
@@ -167,7 +170,7 @@ list-style: none;
 	        picData.forEach(function (picData) {
 	          imglist.push("https://s.nmsl8.club"+picData.pic_url)
 	        })
-	        this.imglist = imglist
+	        this.imglist = reset ? imglist : this.imglist.concat(imglist)
 	        if (piclistResponse.data.data.info.current_page === piclistResponse.data.data.info.last_page) {
 		          this.noMoreData = true
 		        }

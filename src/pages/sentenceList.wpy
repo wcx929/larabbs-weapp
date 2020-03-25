@@ -111,6 +111,7 @@
 	      this.$apply()
 	    }
 	    async onPullDownRefresh() {
+	    	this.noMoreData = false
 	      this.page = 1
 	      await this.getSentence(1,this.type,true)
 	      wepy.stopPullDownRefresh()

@@ -57,6 +57,9 @@
 		width: 90%;
 		margin:0 auto;
 	}
+	.weui-footer{
+		margin-bottom: 20px;
+	}
 </style>
 <template>
 <view class="surport">
@@ -72,18 +75,21 @@
 	 <view class="th">留言</view>
 	 <view class="th ">金额</view>
 	 </view>
-	 <block wx:for="{{listData}}" wx:key="{[code]}">
+	 <block wx:for="{{supports}}" wx:key="{[code]}">
 	 <view class="tr bg-g" wx:if="{{index % 2 == 0}}">
-	  <view class="td">{{item.code}}</view>
-	  <view class="td">{{item.text}}</view>
-	  <view class="td">{{item.type}}</view>
+	  <view class="td">{{item.name}}</view>
+	  <view class="td">{{item.desc}}</view>
+	  <view class="td">{{item.money}}</view>
 	 </view>
 	 <view class="tr" wx:else>
-	  <view class="td">{{item.code}}</view>
-	  <view class="td">{{item.text}}</view>
-	  <view class="td">{{item.type}}</view>
+	  <view class="td">{{item.name}}</view>
+	  <view class="td">{{item.desc}}</view>
+	  <view class="td">{{item.money}}</view>
 	 </view>
 	 </block>
+	 <view class="weui-loadmore weui-loadmore_line" wx:if="{{ noMoreData }}">
+          <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
+        </view>
 	</view>
 	<view class="weui-footer">
     <modal title="扫描二维码加入群聊" hidden="{{modalHidden}}" no-cancel=true bindconfirm="modalConfirm" bindcancel="modalCandel">
@@ -101,25 +107,58 @@
 </template>
 <script>
   	import wepy from 'wepy'
+  	import api from '@/utils/api'
   	export default class Surport extends wepy.page {
 		config = {
-			navigationBarTitleText: '字词我们'
+			navigationBarTitleText: '字词我们',
+			enablePullDownRefresh: true
 		}
 		data = {
-			listData: [
-			  {"code":"晚风","text":"没什么好说的，给大家拜个早年吧","type":"99"},
-			  {"code":"我方水晶","text":"祝各位兄弟","type":"100"},
-			  {"code":"臭农民工","text":"希望安部的软件早点散摊子","type":"33"},
-			  {"code":"fahaxiki","text":"2020成为桥本环奈的老公","type":"7"},
-			  {"code":"卿云烂兮","text":"新年快乐啊朋友们。","type":"12"},
-			  {"code":"卡莎","text":"2020年不再当舔狗","type":"10"},
-			  {"code":"我不会恰烟","text":"我想祝群里的兄弟们明年起码再活一年","type":"9.9"},
-			  {"code":"P*y","text":"就是想点这个二维码","type":"6.9"},
-			  {"code":"...","text":"...","type":"..."}
-			 ],
+			supports: [],
 			sentence:null,
 			cx_sentence:null,
-			modalHidden: true
+			modalHidden: true,
+			noMoreData:false,
+			page: 1,
+		}
+		async getSupports(page = 1,reset = false) {
+			try {
+				// 请求话题列表接口
+				let supportsResponse = await api.request({
+					url: 'api/v1/supportslist',
+					data: {
+						page: page,
+					}
+				})
+				let supports = supportsResponse.data.data.data
+				this.supports = reset ? supports : this.supports.concat(supports)
+				if (supportsResponse.data.data.current_page === supportsResponse.data.data.last_page) {
+		          this.noMoreData = true
+		        }
+				this.$apply()
+			} catch (err) {
+				wepy.showModal({
+					title: '提示',
+					content: '服务器错误，请联系管理员'
+					})
+			}
+		}
+		async onReachBottom () {
+	      // 如果没有更多内容，直接返回
+	      if (this.noMoreData) {
+	        return
+	      }
+	      this.page = this.page + 1
+	      await this.getSupports(this.page)
+	      this.$apply()
+	    }
+		async onPullDownRefresh() {
+	      this.page = 1
+	      await this.getSupports(1,true)
+	      wepy.stopPullDownRefresh()
+	    }
+		async onLoad(options) {
+			this.getSupports()
 		}
 		methods = {
 	      async modalConfirm () {
@@ -128,11 +167,11 @@
 	      qun () {
 	        this.modalHidden = false
 	      },
-	      previewImage () {
-	        console.log(1)
+	      previewImage (e) {
+	      	let current = e.target.dataset.src;
 	        wx.previewImage({
-	          current: 'https://s.nmsl8.club/img/app/surport.jpg',//需要预览的图片链接列表
-	          urls: ['https://s.nmsl8.club/img/app/surport.jpg']  //当前显示图片的链接
+	          current: current,//需要预览的图片链接列表
+	          urls: [current]  //当前显示图片的链接
 	        })
 	      }
 	    }
